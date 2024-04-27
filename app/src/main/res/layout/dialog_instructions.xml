@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/teal_200"
     >
 
     <androidx.cardview.widget.CardView
@@ -16,7 +17,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/purple">
 
         <TextView
             android:layout_marginTop="10dp"
@@ -29,13 +31,14 @@
             android:textSize="30sp"
             android:textStyle="bold"
             android:layout_marginBottom="10dp"
+
             />
 
         <TextView
             android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1. There will be total 15 questions.\n2. Every question consists of 1 point.\n3. There will be only 30 seconds to answer a question."
+            android:text="1. There will be total 15 questions.\n2. Every question consists of 1 point.\n3. There will be only 30 seconds to answer a question.\n\n\n                        LET'S GOO!!"
             android:textColor="#F7F5DB"
             android:textSize="20sp"
             />

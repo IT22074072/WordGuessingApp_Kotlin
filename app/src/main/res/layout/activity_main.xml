@@ -11,7 +11,7 @@
     >
     <!-- TODO: Update blank fragment layout -->
     <com.airbnb.lottie.LottieAnimationView
-        android:foregroundTint="@color/purple_200"
+        android:foregroundTint="@color/teal_200"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/lottie"
@@ -24,7 +24,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#80F4EE8F" />
+        android:background="@color/teal_200" />
 
     <Button
         android:id="@+id/startGame"

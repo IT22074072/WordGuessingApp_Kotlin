@@ -18,6 +18,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/teal_200"
     android:gravity="center"
     tools:context=".ResultActivity">
 
@@ -65,6 +66,7 @@
             android:textSize="70sp"
             android:gravity="center"
             android:textStyle="italic"
+            android:background="@color/purple"
             />
     </androidx.cardview.widget.CardView>
 

@@ -20,6 +20,7 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class GameActivity : AppCompatActivity() {
+    // Declare variables
     private lateinit var binding: ActivityGameBinding
     private var questionCount: Int = 0
     private var answer: String = ""
@@ -40,35 +41,51 @@ class GameActivity : AppCompatActivity() {
     private lateinit var editor: Editor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize views
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initialize Firebase Database reference
         questionRef = FirebaseDatabase.getInstance().reference.child("question")
 
+
+        // Initialize ArrayLists and HashMap
         questionList = ArrayList()
         answerList = ArrayList()
         questionListOld = ArrayList()
         answerListOld = ArrayList()
         hashMap = HashMap()
 
+
+        // Retrieve intent extras and asset manager
         questionListOld = intent.getStringArrayListExtra("questions") as ArrayList
         answerListOld = intent.getStringArrayListExtra("answers") as ArrayList
         assetManager = applicationContext.assets
 
-        sharedPreferences = applicationContext.getSharedPreferences("score", MODE_PRIVATE)
+
+        // Initialize SharedPreferences
+        sharedPreferences = applicationContext.getSharedPreferences("score", MODE_PRIVATE)  //SharedPreferences file can only be accessed by the calling application.
         editor = sharedPreferences.edit()
 
+
+        // Retrieve and display best score
         val bestScore = sharedPreferences.getString("bestScore", "0")
         binding.bestScore.text = "Your Best Score : $bestScore"
 
+
+        // Populate HashMap and shuffle entries
         for (each in 0 until questionListOld.size) {
             hashMap[questionListOld[each]] = answerListOld[each]
         }
 
         val entries = hashMap.entries.shuffled()
 
+
+        // Initialize timer
         timer()
 
+
+        // Populate questionList and answerList
         for (each in entries) {
             questionList.add(each.key)
             answerList.add(each.value)
@@ -76,9 +93,15 @@ class GameActivity : AppCompatActivity() {
 
         remaining = 15
 
+
+        // Update UI with initial question and answer fields
         updateAnswerAndQuestion()
 
+
+        // Handle EditText focus changes
         binding.et1.doOnTextChanged { _, _, _, _ ->
+
+            // Move focus to the next EditText if current one is filled
             if (binding.et1.text.toString().isNotEmpty()) {
                 binding.et2.requestFocus()
             }
@@ -86,6 +109,10 @@ class GameActivity : AppCompatActivity() {
                 binding.et2.requestFocus()
             }
         }
+
+
+        // Similar logic for the remaining EditText fields
+        // (et2, et3, et4, et5, et6)
 
         binding.et2.doOnTextChanged { _, _, _, _ ->
             if (binding.et2.text.toString().isNotEmpty()) {
@@ -125,7 +152,11 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
+
+
+        // Handle click on next button
         binding.nextbtn.setOnClickListener {
+            // Play click sound
             val musicFileName = "clickButton.mp3"
             val descriptor: AssetFileDescriptor = assetManager.openFd(musicFileName)
             clickMediaPlayer = MediaPlayer()
@@ -138,6 +169,8 @@ class GameActivity : AppCompatActivity() {
             clickMediaPlayer.prepare()
             clickMediaPlayer.start()
 
+
+            // Concatenate user input to form the answer
             answer = binding.et1.text.toString() +
                     binding.et2.text.toString() +
                     binding.et3.text.toString() +
@@ -145,17 +178,30 @@ class GameActivity : AppCompatActivity() {
                     binding.et5.text.toString() +
                     binding.et6.text.toString()
 
+
+            // Check if it's the last question
             if (remaining == 1) {
+                // If it's the last question, check if the current answer is correct
                 if (currentAnswer.equals(answer, ignoreCase = true)) {
+                    // Increment correct count if the answer is correct
                     correct++
+                    // Update UI with correct count
                     binding.solvedtv.text = correct.toString()
+
+
+
+                    // Prepare intent to start ResultActivity
                     val intent = Intent(this@GameActivity, ResultActivity::class.java)
                     intent.putExtra("result", correct.toString())
                     intent.putExtra("questions", questionList)
                     intent.putExtra("answers", answerList)
+
+                    // Start ResultActivity
                     startActivity(intent)
+                    // Finish current activity
                     finish()
                 } else {
+                    // If the answer is incorrect for the last question
                     val intent = Intent(this@GameActivity, ResultActivity::class.java)
                     intent.putExtra("result", correct.toString())
                     intent.putExtra("questions", questionList)
@@ -164,12 +210,15 @@ class GameActivity : AppCompatActivity() {
                     finish()
                 }
             } else {
-
+                // If it's not the last question
                 if (isButtonClickable && currentAnswer.equals(answer, ignoreCase = true)) {
+                    // If the button is clickable and the answer is correct
                     isButtonClickable = false
 
+                    // Cancel the countdown timer
                     countDownTimer.cancel()
 
+                    // Show correct animation
                     binding.lottie.visibility = View.VISIBLE
                     binding.lottie.setAnimation("correct.json")
                     binding.lottie.playAnimation()
@@ -179,26 +228,32 @@ class GameActivity : AppCompatActivity() {
 
                         binding.lottie.visibility = View.GONE
 
+                        // Decrement remaining attempts
                         remaining -= 1
 
                         correct++
                         binding.solvedtv.setText(correct.toString())
 
+                        // Set button clickable again
                         isButtonClickable = true
 
                         countDownTimer.cancel()
 
+                        // Update question and timer
                         updateAnswerAndQuestion()
-
                         timer()
                     }, 2000)
 
                 } else {
+                    // If the button is clickable and the answer is incorrect
                     if (isButtonClickable) {
-
+                        // Set button clickable to false
                         isButtonClickable = false
 
+                        // Cancel countdown timer
                         countDownTimer.cancel()
+
+                        // Show wrong animation
                         binding.lottie.visibility = View.VISIBLE
                         binding.lottie.setAnimation("wrong.json")
                         binding.lottie.playAnimation()
@@ -223,17 +278,21 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun updateAnswerAndQuestion() {
-
+        // Update remaining attempts count
         binding.remainingTv.text = remaining.toString()
+        // Display current question
         binding.hintTv.text = questionList[questionCount].uppercase(Locale.getDefault())
 
+        // Retrieve current answer
         currentAnswer = answerList[questionCount]
 
+        // Move to the next question and handle overflow
         questionCount += 1
         if (questionCount >= questionList.size) {
             questionCount = 0
         }
 
+        // Show/hide EditText fields based on answer length
         when (currentAnswer.length) {
             1 -> {
                 binding.et1.visibility = View.VISIBLE
@@ -289,6 +348,7 @@ class GameActivity : AppCompatActivity() {
                 binding.et6.visibility = View.VISIBLE
             }
         }
+        // Clear EditText fields and set focus to the first EditText
         binding.et1.text.clear()
         binding.et2.text.clear()
         binding.et3.text.clear()
@@ -298,15 +358,20 @@ class GameActivity : AppCompatActivity() {
         binding.et1.requestFocus()
     }
 
+
     fun timer() {
+        // Initialize countdown timer
         countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
+                // Update timer text with remaining seconds
                 val secondsLeft = millisUntilFinished / 1000
                 binding.timerTv.text = secondsLeft.toString()
             }
 
             override fun onFinish() {
+                // When timer finishes
                 if (remaining == 1) {
+                    // If it's the last attempt, start ResultActivity
                     val intent = Intent(this@GameActivity, ResultActivity::class.java)
                     intent.putExtra("result", correct.toString())
                     intent.putExtra("questions", questionList)
@@ -314,6 +379,7 @@ class GameActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } else {
+                    // If it's not the last attempt, show wrong animation
                     binding.lottie.visibility = View.VISIBLE
                     binding.lottie.setAnimation("wrong.json")
                     binding.lottie.playAnimation()
@@ -322,7 +388,9 @@ class GameActivity : AppCompatActivity() {
                     handler.postDelayed({
                         // Hide the Lottie animation view
                         binding.lottie.visibility = View.GONE
+                        // Decrement remaining attempts
                         remaining -= 1
+                        // Restart timer and update question
                         timer()
                         updateAnswerAndQuestion()
                     }, 2000)
@@ -332,10 +400,12 @@ class GameActivity : AppCompatActivity() {
         countDownTimer.start()
     }
 
+    // Handle back button press
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         super.onBackPressed()
 
+        // Play click sound on back button press
         val musicFileName = "clickButton.mp3"
         val descriptor: AssetFileDescriptor = assetManager.openFd(musicFileName)
 

@@ -23,25 +23,37 @@ class MainActivity : AppCompatActivity() {
     private lateinit var assetManager : AssetManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Inflate the layout using ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initialize Firebase database reference for questions
         questionRef = FirebaseDatabase.getInstance().reference.child("question")
 
+        // Initialize question and answer lists
         questionArrayList = ArrayList()
         answerArrayList = ArrayList()
 
+
+        // Start background music service
         val intent = Intent(this, MusicService::class.java)
         startService(intent)
 
+        // Initialize asset manager to access sound files
         assetManager = applicationContext.assets
+
+        // Set click listener for start game button
         binding.startGame.setOnClickListener {
+            // Load click sound
             val musicFileName = "clickButton.mp3"
             val descriptor: AssetFileDescriptor = assetManager.openFd(musicFileName)
             clickMediaPlayer = MediaPlayer()
             clickMediaPlayer.setDataSource(descriptor.fileDescriptor, descriptor.startOffset, descriptor.length)
             clickMediaPlayer.prepare()
             clickMediaPlayer.start()
+
+
+            // Retrieve questions and answers from Firebase
             questionRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (each in snapshot.children) {
@@ -49,16 +61,22 @@ class MainActivity : AppCompatActivity() {
                         questionArrayList.add(value?.key.toString())
                         answerArrayList.add(value?.value.toString())
                     }
+
+                    // Display instructions dialog
                     var dialog= Dialog(this@MainActivity)
                     var dialogbind = DialogInstructionsBinding.inflate(layoutInflater)
                     dialog.setContentView(dialogbind.root)
                     dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     dialog.window?.setLayout(WindowManager.LayoutParams.MATCH_PARENT,WindowManager.LayoutParams.WRAP_CONTENT)
+
+                    // Set click listener for start game button in the dialog
                     dialogbind.startGame.setOnClickListener {
                         clickMediaPlayer = MediaPlayer()
                         clickMediaPlayer.setDataSource(descriptor.fileDescriptor, descriptor.startOffset, descriptor.length)
                         clickMediaPlayer.prepare()
                         clickMediaPlayer.start()
+
+                        // Dismiss dialog and start game activity
                         dialog.dismiss()
                         var intent = Intent(this@MainActivity, GameActivity::class.java)
                         intent.putExtra("questions", questionArrayList)
@@ -68,12 +86,15 @@ class MainActivity : AppCompatActivity() {
                     dialog.show()
                 }
                 override fun onCancelled(error: DatabaseError) {
+                    // Handle cancellation of data retrieval
                     TODO("Not yet implemented")
                 }
 
             })
         }
     }
+
+    // Handle back button press
     override fun onBackPressed() {
         super.onBackPressed()
         val musicFileName = "clickButton.mp3"
@@ -84,7 +105,7 @@ class MainActivity : AppCompatActivity() {
         clickMediaPlayer.start()
     }
 
-
+    // Stop background music service when activity is destroyed
     override fun onDestroy() {
         super.onDestroy()
         val intent = Intent(this, MusicService::class.java)

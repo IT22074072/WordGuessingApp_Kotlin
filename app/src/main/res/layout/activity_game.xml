@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#fffccf"
+        android:background="@color/teal_200"
         tools:context=".GameActivity">
 
         <androidx.cardview.widget.CardView
@@ -17,7 +17,8 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:background="@color/purple">
 
                 <TextView
                     android:layout_width="match_parent"
@@ -248,6 +249,7 @@
                     android:padding="10dp"
                     android:gravity="center"
                     android:textStyle="italic"
+                    android:background="@color/purple"
                     />
             </androidx.cardview.widget.CardView>
 
@@ -259,7 +261,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
-                android:backgroundTint="@color/purple_200"
+                android:backgroundTint="@color/purple"
                 app:tint="@color/white"
                 android:src="@drawable/baseline_done_24" />
 
