@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Word Guessing Game</string>
     <string name="start_game">START GAME</string>
+    <string name="results">Results</string>
+    <string name="play_again">PLAY AGAIN</string>
 
 </resources>
