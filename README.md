@@ -10,7 +10,6 @@ Instructions :
 4. Result will displayed after completion of 15 questiones either wrong or correct.
 
 
-https://github.com/Japnoor2104/WordGuessingGame/assets/109523523/dd78debc-34c1-428e-86a5-779823110686
 
 All questions are store in Firebase manually : 
 
